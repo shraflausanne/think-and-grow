@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1424">
+<meta name="apple-mobile-web-app-title" content="Think and Grow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Think &amp; Grow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a calm, confident personal coach; warm, never shouty.
+   IDEA: a pocket commitment ledger: one signed contract plus a daily ritual card.
+   PICTURE: the step card, progress ring and paper contract carry each screen.
+   COLOUR and TYPE: night navy ground, gold for progress, coral for weak spots; Bricolage display, Inter body, Caveat signature.
+   LAYOUT: phone-first single column, fixed tab bar, centred at 480px on wider screens. */
+:root{color-scheme:dark;--bg:#0B1424;--s1:#121E33;--s2:#182844;--s3:#1C2B45;--line:#22355A;--line2:#2A3E63;--ink:#F5F1E8;--mut:#A3B1C8;--faint:#7F8DA6;--soft:#C9D3E3;--gold:#F2C14E;--coral:#FF8A65;--paper:#F5F1E8;--pink:#1B2333;--brown:#7A5710}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+.disp{font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;letter-spacing:-.02em}
+header{padding:20px 16px 14px;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-size:16px}
+.logo{width:32px;height:32px;border-radius:12px;background:var(--gold);display:grid;place-items:center}
+.status{font-size:12px;font-weight:600;padding:7px 12px;border-radius:99px;background:var(--s2);color:var(--soft);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.status.ok i{background:#5CC8B0}.status.busy i{background:var(--gold)}.status.bad i{background:var(--coral)}
+.kick{font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--gold)}
+h1{margin:4px 0 0;font-size:clamp(28px,8vw,34px);line-height:1.05;text-wrap:balance}
+main{flex:1;padding:4px 16px calc(110px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.paper{background:var(--paper);color:var(--pink);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column;gap:12px}
+.paper .lab{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--brown)}
+.stmt{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:18px;line-height:1.45;white-space:pre-line}
+.mut{color:var(--mut)}.small{font-size:13px;line-height:1.4}
+.fld{width:100%;background:var(--bg);border:1px solid var(--line2);border-radius:12px;color:var(--ink);font:16px/1.45 Inter,sans-serif;padding:14px 16px;min-height:52px}
+.fld::placeholder{color:var(--faint)}textarea.fld{resize:none;min-height:128px;field-sizing:content}textarea.fld.short{min-height:0}
+label.l{font-size:13px;font-weight:600;color:var(--mut)}
+.field{display:flex;flex-direction:column;gap:8px}
+.segs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.seg{height:44px;border:0;padding:0;background:none;display:flex;align-items:center}.seg span{display:block;width:100%;height:5px;border-radius:99px;background:var(--line)}.seg.on span{background:var(--gold)}
+.num{font-size:64px;line-height:.85;letter-spacing:-.04em;color:var(--gold)}
+.stephead{display:flex;align-items:flex-end;justify-content:space-between}
+.steptag{font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--mut);text-align:right}
+h2{margin:0;font-family:'Bricolage Grotesque',Inter,sans-serif;font-weight:800;letter-spacing:-.02em;font-size:24px;line-height:1.15;text-wrap:balance}
+.tip{display:flex;gap:10px;align-items:flex-start;background:var(--s2);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45;color:var(--soft)}
+.tip svg{flex:none;margin-top:2px}
+.navrow{display:flex;gap:10px}
+.btn{min-height:56px;border-radius:18px;border:0;background:var(--gold);color:var(--bg);font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;flex:1;font-size:16px}
+.ghost{width:56px;flex:none;background:transparent;border:1px solid var(--line2);color:var(--ink)}
+.sig{width:100%;background:transparent;border:0;border-bottom:1.5px solid var(--pink);color:var(--pink);font:600 32px/1.1 Caveat,cursive;padding:4px 2px;min-height:48px}
+.sig::placeholder{color:#6E685C}.sig:focus-visible{outline-color:var(--brown)}
+.seal{width:40px;height:40px;border-radius:50%;background:transparent;border:2px dashed #7A5710;display:grid;place-items:center;transition:background .3s}.seal svg{opacity:.35}.seal.on{background:var(--gold);border:2px solid var(--gold)}.seal.on svg{opacity:1}
+.big{font-size:40px;color:var(--gold)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:var(--s2);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.hero{flex-direction:row;align-items:center;gap:18px}
+.ring{position:relative;width:132px;height:132px;flex:none}
+.ring circle{transition:stroke-dasharray .5s ease}
+.ringc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.week span{font-size:11px;font-weight:600;color:var(--faint)}.week .today span{color:var(--ink)}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid #3A4F75;margin:5px auto 0}.today .dot{border-color:var(--ink)}.full .dot{background:var(--gold);border-color:var(--gold)}
+.banner{background:var(--gold);color:var(--bg);border-radius:18px;padding:16px 18px;display:flex;gap:12px;align-items:center}
+.rit{min-height:68px;border-radius:18px;border:1px solid var(--line);background:var(--s1);padding:12px 16px;display:flex;gap:14px;align-items:center;text-align:left;width:100%}
+.rit.on{background:var(--s3);border-color:var(--gold)}
+.chk{width:30px;height:30px;border-radius:50%;flex:none;border:2px solid #3A4F75;display:grid;place-items:center}
+.chk svg{stroke:transparent}.rit.on .chk{background:var(--gold);border-color:var(--gold)}.rit.on .chk svg{stroke:var(--bg)}
+.when{font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--gold)}
+.list{display:flex;flex-direction:column;gap:10px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .4s}
+.focus{background:var(--s2);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.prin{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:16px 16px 6px;display:flex;flex-direction:column;gap:6px}
+.prin.weak{border-color:var(--coral)}
+.pn{width:34px;height:34px;flex:none;border-radius:12px;background:var(--s2);display:grid;place-items:center;font-size:15px;color:var(--gold)}
+.meter{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding-left:46px}
+.meter button{height:44px;border:0;padding:0;background:none;display:flex;align-items:center}
+.meter span{display:block;width:100%;height:10px;border-radius:99px;background:#24375A}.meter .on span{background:var(--gold)}
+.av{width:36px;height:36px;border-radius:50%;color:var(--bg);font-weight:700;font-size:13px;display:grid;place-items:center;flex:none}
+.stack .av{width:34px;height:34px;border:2px solid var(--s1);font-size:11px}.stack .av+.av{margin-left:-8px}.stack .more{background:var(--s2);color:var(--soft)}
+.mem{display:flex;align-items:center;gap:12px;min-height:48px}
+.x{width:44px;height:44px;border:0;border-radius:12px;background:none;color:var(--mut);display:grid;place-items:center}
+.add{display:flex;gap:8px}.add .btn{width:52px;flex:none;min-height:52px;border-radius:12px}
+.fear{min-height:56px;border-radius:12px;border:1px solid var(--line);background:var(--s2);color:var(--soft);font-weight:600;font-size:14px;text-align:left;padding:10px 14px}
+.fear.on{background:#3A2220;border-color:var(--coral);color:#FFB49C}
+.pc{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.foot{margin:0;font-size:12px;line-height:1.4;color:var(--faint);text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+nav{position:fixed;left:0;right:0;bottom:0;background:#0E192C;border-top:1px solid #1C2C48;padding:8px max(10px,calc(50vw - 270px)) calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;z-index:5}
+nav button{min-height:58px;border:0;border-radius:18px;background:none;color:#8D9BB4;font-weight:600;font-size:11.5px;padding:0 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+nav button[aria-current=page]{background:#1A2942;color:var(--gold)}
+.lhero{background:var(--gold);color:var(--bg);border-radius:24px;padding:22px 20px;display:flex;flex-direction:column;gap:10px}
+.lhero p{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:21px;line-height:1.35}
+.lbody{margin:0;font-size:15px;line-height:1.55;color:var(--soft)}
+.loop{display:flex;flex-direction:column}
+.lstep{display:flex;gap:14px;position:relative;padding-bottom:16px}
+.lstep:not(:last-child)::before{content:"";position:absolute;left:17px;top:36px;bottom:0;width:2px;background:var(--line2)}
+.lnum{width:36px;height:36px;border-radius:50%;flex:none;background:var(--s2);border:2px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:15px}
+.lback{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--gold);font-weight:600;padding-left:4px}
+.lmap{display:flex;flex-direction:column;gap:10px}
+.lgo{display:flex;gap:14px;align-items:center;text-align:left;width:100%;min-height:72px;border-radius:18px;border:1px solid var(--line);background:var(--s2);padding:14px 16px}
+.lgo .ic{width:40px;height:40px;border-radius:12px;background:var(--bg);color:var(--gold);display:grid;place-items:center;flex:none}
+.sci{border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px;background:var(--s2)}
+.sci.warn{background:#2A1F22;border:1px solid #6B3A30}
+.tag{font-size:11px;font-weight:700;letter-spacing:.14em}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:2px 16px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 32px),transparent)}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:44px;padding:0 14px;border-radius:99px;border:1px solid var(--line2);background:transparent;color:var(--soft);font-size:13px;font-weight:600;white-space:nowrap}
+.chip.on{background:var(--gold);color:var(--bg);border-color:var(--gold)}.chip.done:not(.on){color:#5CC8B0;border-color:#2E5F58}
+.formula{display:flex;flex-direction:column;gap:6px}
+.fx{display:flex;gap:12px;align-items:center;background:var(--s2);border-radius:12px;padding:12px 14px}
+.fxn{width:32px;height:32px;border-radius:12px;background:var(--gold);color:var(--bg);display:grid;place-items:center;flex:none}
+.plus{text-align:center;font:800 20px/1 'Bricolage Grotesque',sans-serif;color:var(--gold)}
+.fres{background:var(--gold);color:var(--bg);border-radius:12px;padding:14px;text-align:center;font-size:22px}
+.wa{display:flex;flex-direction:column;gap:4px}
+.wish{background:#2A1F22;border:1px solid #6B3A30;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:2px;color:#FFB49C}
+.aimc{background:var(--gold);color:var(--bg);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:2px;font-weight:600}
+.arrow{text-align:center;color:var(--mut);font-weight:700}
+.tests{display:grid;grid-template-columns:1fr;gap:8px}
+.tst{background:var(--s2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:14px}
+.maya{margin-top:6px;background:var(--s2);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.45;color:var(--soft)}
+.story{background:var(--s2)}
+.dayline{display:flex;flex-direction:column}
+.dl{display:flex;gap:14px;padding-bottom:16px;position:relative}
+.dl:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--line2)}
+.dlic{width:44px;height:44px;border-radius:50%;background:var(--s2);color:var(--gold);display:grid;place-items:center;flex:none}
+.tipr{display:flex;gap:10px;align-items:flex-start}.tipr>*:first-child{flex:none}
+.woop{display:flex;flex-direction:column;gap:8px}
+.wp{display:flex;gap:12px;align-items:flex-start;background:var(--s2);border-radius:12px;padding:12px}
+.wk{width:36px;height:36px;border-radius:12px;background:var(--gold);color:var(--bg);display:grid;place-items:center;flex:none;font-size:18px}
+.clusters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cl{border:1.5px solid;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--s2)}
+.chipw{display:flex;flex-wrap:wrap;gap:4px}
+.pchip{color:var(--bg);font-size:11.5px;font-weight:600;border-radius:8px;padding:3px 7px}
+.pd{background:var(--s1);border:1px solid var(--line);border-radius:18px}
+.pd summary{list-style:none;display:flex;align-items:center;gap:12px;padding:10px 16px;min-height:56px;cursor:pointer}
+.pd summary::-webkit-details-marker{display:none}
+.chev{transition:transform .2s}.pd[open] .chev{transform:rotate(180deg)}
+.pdb{padding:12px 16px 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.tryit{background:var(--gold);color:var(--bg);border-radius:12px;padding:12px 14px;font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.chain{display:flex;align-items:center;gap:6px}
+.ch{flex:1;text-align:center;background:var(--coral);color:var(--bg);font-weight:700;border-radius:12px;padding:12px 4px;font-size:14px}
+.fs{background:var(--s2);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.mm{position:relative;height:260px}
+.mm::before{content:"";position:absolute;left:50%;top:50%;width:170px;height:170px;transform:translate(-50%,-50%);border:2px dashed var(--line2);border-radius:50%}
+.mmc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:var(--gold);color:var(--bg);display:grid;place-items:center;font-size:18px}
+.mmr{position:absolute;width:96px;min-height:68px;text-align:center;border-radius:12px;padding:8px 6px;color:var(--bg);display:flex;flex-direction:column;justify-content:center}
+.mm0{left:50%;top:0;transform:translateX(-50%);background:#5CC8B0}.mm1{right:0;top:50%;transform:translateY(-50%);background:#A99BFF}
+.mm2{left:50%;bottom:0;transform:translateX(-50%);background:#6FB7FF}.mm3{left:0;top:50%;transform:translateY(-50%);background:#FF8A65}
+.kq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kqi{background:#173A36;color:#C6EFE6;border-radius:12px;padding:8px 10px;font-size:13px;line-height:1.35;margin-top:6px}
+.kqi.q{background:#3A2220;color:#FFB49C}
+.qo{min-height:52px;border-radius:12px;border:1px solid var(--line2);background:var(--s2);text-align:left;padding:10px 14px;font-size:15px}
+.qo.right{border-color:#5CC8B0;background:#173A36}.qo.wrong{border-color:var(--coral);background:#3A2220}
+.qwhy{background:var(--s2);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45;color:var(--soft)}
+.pop{animation:pop .35s ease}@keyframes pop{0%{transform:scale(.96);opacity:.6}100%{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="top">
+<div class="brand disp"><span class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B1424" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 20 4 15 9 15 9 10 14 10 14 5 20 5"/></svg></span>Think &amp; Grow</div>
+<div id="status" class="status" role="status" aria-live="polite"><i></i><span>Loading</span></div>
+</div>
+<div><div id="kick" class="kick"></div><h1 id="title" class="disp"></h1></div>
+</header>
+<main id="main"></main>
+<nav aria-label="Sections">
+<button data-act="tab" data-tab="learn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h6a4 4 0 0 1 4 4v11a3 3 0 0 0-3-3H2zM22 5h-6a4 4 0 0 0-4 4v11a3 3 0 0 1 3-3h7z"/></svg>Learn</button>
+<button data-act="tab" data-tab="aim"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Aim</button>
+<button data-act="tab" data-tab="daily"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Daily</button>
+<button data-act="tab" data-tab="steps"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 20 4 15 9 15 9 10 14 10 14 5 20 5"/></svg>13 Steps</button>
+<button data-act="tab" data-tab="mind"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.5c2.6.3 4.5 2.5 4.5 5.5"/></svg>Mind</button>
+</nav>
+</div>
+<script>
+{
+/* =====================================================================
+   EDITABLE CONTENT: change any wording here and the screens update.
+   ===================================================================== */
+const SCREENS = {
+  learn: { kicker: 'THE IDEA BEHIND THE APP', title: 'Think and Grow Rich, in plain words' },
+  aim:   { kicker: 'DEFINITE CHIEF AIM',   title: 'Turn a wish into a commitment' },
+  daily: { kicker: 'TODAY',                title: 'Keep the goal in front of you' },
+  steps: { kicker: 'THE 13 PRINCIPLES',    title: 'Find your weakest link' },
+  mind:  { kicker: 'ALLIES AND OBSTACLES', title: 'Who and what shapes your mind' }
+};
+const AIM_STEPS = [
+  { tag: 'DESIRE',    q: 'What exactly do you want?',      tip: 'Be precise. “More money” is a wish. A specific, measurable result is a goal.' },
+  { tag: 'EXCHANGE',  q: 'What will you give in return?',  tip: 'Nothing comes for nothing. Name the effort, skill or service you will trade for it.' },
+  { tag: 'DEADLINE',  q: 'By when will you have it?',      tip: 'A definite date turns an intention into a commitment.' },
+  { tag: 'PLAN',      q: 'How will you get there?',        tip: 'Write a plan and start today, ready or not. If it fails, change the plan, not the goal.' },
+  { tag: 'STATEMENT', q: 'Put it in writing and sign it.', tip: 'Your answers become one clear statement. Signing it makes it yours.' },
+  { tag: 'RITUAL',    q: 'Read it aloud, twice a day.',    tip: 'Once on waking, once before sleep. See and feel the goal as already reached.' }
+];
+const NEXT_LABELS = ['Next', 'Next', 'Next', 'Write my statement', 'Sign and continue', 'Start today’s ritual'];
+const RITUALS = [
+  { id: 'am',    when: 'MORNING',       label: 'Read my statement aloud' },
+  { id: 'pm',    when: 'EVENING',       label: 'Read it aloud again before sleep' },
+  { id: 'see',   when: 'WHILE READING', label: 'Pictured the goal as already reached' },
+  { id: 'act',   when: 'TODAY',         label: 'Took one concrete action from my plan' },
+  { id: 'guard', when: 'ALL DAY',       label: 'Kept away from one negative influence' }
+];
+const PRINCIPLES = [
+  { id: 'desire',         name: 'Desire',                note: 'A specific, intense want is where every achievement starts.' },
+  { id: 'faith',          name: 'Faith',                 note: 'Believe the goal is reachable, and build that belief on purpose.' },
+  { id: 'autosuggestion', name: 'Autosuggestion',        note: 'Repeat your goal statement to yourself daily, with feeling.' },
+  { id: 'knowledge',      name: 'Specialized knowledge', note: 'Know what the goal requires, and where to get what you lack.' },
+  { id: 'imagination',    name: 'Imagination',           note: 'Turn the desire into ideas and a workable plan.' },
+  { id: 'planning',       name: 'Organized planning',    note: 'Write the plan down. If it fails, replace the plan, not the goal.' },
+  { id: 'decision',       name: 'Decision',              note: 'Decide quickly, and change your mind slowly.' },
+  { id: 'persistence',    name: 'Persistence',           note: 'Keep acting through setbacks until the habit carries you.' },
+  { id: 'mastermind',     name: 'Master Mind',           note: 'Work in harmony with a small group that supports the goal.' },
+  { id: 'transmutation',  name: 'Transmutation',         note: 'Redirect strong drives and emotions into creative work.' },
+  { id: 'subconscious',   name: 'The subconscious mind', note: 'Let positive emotions dominate what your mind dwells on.' },
+  { id: 'brain',          name: 'The brain',             note: 'Ideas grow sharper through contact with other minds.' },
+  { id: 'sixth',          name: 'The sixth sense',       note: 'Hill’s name for intuition. It comes once the others are habits.' }
+];
+const FEARS = [
+  { id: 'poverty', label: 'Poverty' }, { id: 'criticism', label: 'Criticism' }, { id: 'health', label: 'Ill health' },
+  { id: 'love', label: 'Loss of love' }, { id: 'age', label: 'Old age' }, { id: 'death', label: 'Death' }
+];
+const PERSISTENCE = [
+  { title: 'Purpose', text: 'A definite goal, backed by burning desire.' },
+  { title: 'Plan',    text: 'A definite plan, carried out in continuous action.' },
+  { title: 'Guard',   text: 'A mind closed to negative, discouraging influences.' },
+  { title: 'Allies',  text: 'Friends who encourage you to follow through.' }
+];
+const LEARN = {
+  /* Maya is an invented example used throughout the chapters. */
+  chapters: [
+    { short: 'Big idea', title: 'The big idea' },
+    { short: 'Definite aim', title: 'From wish to definite aim' },
+    { short: 'Daily mind', title: 'Training your mind every day' },
+    { short: '13 principles', title: 'The 13 principles, explained' },
+    { short: 'Fear & allies', title: 'Fear, persistence and allies' },
+    { short: 'Keep or question', title: 'What to keep, what to question' }
+  ],
+  oneLine: 'Napoleon Hill argued that achievement starts in the mind: a definite goal, wanted intensely, written down, repeated every day, and backed by a plan you act on without giving up.',
+  formula: [
+    { t: 'A definite goal', s: 'Know exactly what you want' },
+    { t: 'Burning desire',  s: 'Want it more than comfort' },
+    { t: 'A plan',          s: 'Start before you feel ready' },
+    { t: 'Persistence',     s: 'Keep going after setbacks' }
+  ],
+  formulaResult: 'Achievement',
+  bigIdea: [
+    'Most people never decide what they want. They hope, wish and wait. Hill’s whole system is a method for turning a vague hope into a firm decision, and that decision into daily behaviour.',
+    'He wrote mostly about money, because he was writing during the Great Depression. But the method is about any definite goal: a business, a career move, a health target, a creative project. This app uses it that way.'
+  ],
+  origin: [
+    'Think and Grow Rich came out in 1937. Napoleon Hill wrote it with substantial help from Rosa Lee Beeland, and it became one of the best-selling self-help books of all time.',
+    'Hill said the book distilled the habits of hundreds of successful people, studied at the suggestion of the industrialist Andrew Carnegie. Historians found no record of the two ever meeting. So read it as a practical philosophy built from stories, not as research.'
+  ],
+  wishes: [
+    { wish: 'I want more money',     aim: 'Earn €60,000 a year from my own clients by 31 December 2027' },
+    { wish: 'I want to get fit',     aim: 'Run 10 km in under 55 minutes by 1 June 2027' },
+    { wish: 'I’d like a better job', aim: 'Be hired as a senior designer at a company of 50+ people by 30 September 2027' }
+  ],
+  aimTests: [
+    'Could a stranger tell whether you hit it?',
+    'Does it have a date?',
+    'Does it stretch you a little?'
+  ],
+  sixSteps: [
+    { step: 'Decide exactly what you want',    maya: 'Earn €60,000 a year from my own design studio.' },
+    { step: 'Decide what you will give for it', maya: 'Two focused hours of sales every morning, and no more weekend gaming.' },
+    { step: 'Set a definite date',              maya: '31 December 2027.' },
+    { step: 'Make a plan and start at once',    maya: 'Today: list 20 past contacts. This week: message 5 of them each day.' },
+    { step: 'Write it all as one statement',    maya: 'By 31 December 2027, I will earn €60,000 a year from my design studio. In return I give two hours of sales every morning…' },
+    { step: 'Read it aloud twice a day',        maya: 'Phone alarms at 7:00 and 22:30, statement pinned on the lock screen.' }
+  ],
+  stories: [
+    { title: 'Hill’s example: the man who decided to be Edison’s partner',
+      text: 'Hill tells of Edwin C. Barnes, who had no money and no contacts but decided he would become Thomas Edison’s business partner. He took a humble job at Edison’s lab and waited for years. When Edison built a dictating machine the sales team didn’t believe in, Barnes asked to sell it, succeeded, and won his partnership. Hill’s lesson: a definite desire keeps you ready for the chance when it comes.' },
+    { title: 'Hill’s image: burn your ships',
+      text: 'Hill describes a commander who burned his own ships after landing, so his soldiers could only win or perish. The point is to remove the easy way back. For Maya, that means telling three past clients she is opening her studio, so quitting quietly is no longer an option.' }
+  ],
+  dayPlan: [
+    { when: 'Morning', what: 'Read your statement aloud. Picture the result in detail. Then name today’s biggest obstacle.' },
+    { when: 'Daytime', what: 'Take at least one concrete action from your plan, however small.' },
+    { when: 'Evening', what: 'Read your statement aloud again, just before sleep.' }
+  ],
+  mindIdea: [
+    'Hill believed your subconscious mind acts on whatever you feed it repeatedly with emotion, good or bad. So he asked readers to feed it their goal on purpose. He called this autosuggestion: talking to yourself deliberately.',
+    'Repetition builds faith, which for Hill meant a settled belief that the goal is reachable. You don’t wait to feel confident. You build confidence by daily practice.'
+  ],
+  readTips: [
+    'Read aloud, not silently. Hearing your own voice makes it real.',
+    'Picture concrete details: the place, the people, the number on the screen.',
+    'Say it as already decided: “I will”, never “I hope”.',
+    'Finish by naming the obstacle and your if-then plan (see below).'
+  ],
+  woop: [
+    { k: 'W', name: 'Wish',     maya: 'Run my own design studio earning €60,000 a year.' },
+    { k: 'O', name: 'Outcome',  maya: 'Freedom to choose clients and my own hours.' },
+    { k: 'O', name: 'Obstacle', maya: 'I avoid sales messages because I fear rejection.' },
+    { k: 'P', name: 'Plan',     maya: 'If it is 9:00 and I want to check email, then I send one client message first.' }
+  ],
+  clusters: [
+    { name: 'Direction', color: '#F2C14E', ids: [0, 1, 2],     note: 'Know what you want and believe in it' },
+    { name: 'Means',     color: '#5CC8B0', ids: [3, 4, 5],     note: 'Find the knowledge, ideas and plan' },
+    { name: 'Drive',     color: '#FF8A65', ids: [6, 7, 8, 9],  note: 'Decide, keep going, get help' },
+    { name: 'Inner mind',color: '#A99BFF', ids: [10, 11, 12],  note: 'Hill’s theory of how the mind works' }
+  ],
+  principleDetails: [
+    { meaning: 'Not a wish but an obsession with a specific goal. Hill says every achievement starts here, and that weak desire brings weak results.', example: 'Barnes deciding to become Edison’s partner, with nothing but that desire to start with.', tryThis: 'Finish this sentence in writing: “I want this because…”' },
+    { meaning: 'A firm belief that the goal is reachable. For Hill it is not something you have or lack. You build it through repetition and small proofs.', example: 'Hill gives readers a short self-confidence formula to read every day, promising themselves to act on their goal.', tryThis: 'List three hard things you have already done. Read them before your statement.' },
+    { meaning: 'Talking to yourself on purpose. Instructions you repeat with emotion sink in; instructions read flatly do not.', example: 'Reading your goal statement aloud morning and night, as in the Daily tab.', tryThis: 'Record your statement as a voice memo and play it on your commute.' },
+    { meaning: 'General knowledge is not power. Knowledge becomes power only when it is organised and aimed at a goal. You don’t need to know everything, only where to get it.', example: 'Hill tells how Henry Ford, mocked in court for gaps in his general knowledge, said he could get any answer he needed from experts around him.', tryThis: 'List three skills your goal needs, and who already has each one.' },
+    { meaning: 'The workshop of the mind. Hill splits it into synthetic imagination (new combinations of old ideas) and creative imagination (sudden insight).', example: 'Most business ideas are combinations: a known skill applied to a new audience.', tryThis: 'Combine your main skill with a field you love. Write three ideas.' },
+    { meaning: 'Turn desire into a written plan, built with other people’s help. If a plan fails, Hill calls it temporary defeat: make a new plan, keep the goal.', example: 'Maya’s plan: 20 contacts listed, 5 messages a day, first paid project in 60 days.', tryThis: 'Write your plan B now, before you need it.' },
+    { meaning: 'Hill found successful people decide quickly and change their minds slowly. Unsuccessful people do the opposite. He also advised sharing plans only with your trusted group.', example: 'Choosing a business name in one evening instead of debating it for months.', tryThis: 'Pick one decision you have postponed and make it today.' },
+    { meaning: 'Desire plus willpower, kept up over time. Hill says it can be learned like any habit.', example: 'Hill’s four habits of persistence: a definite purpose, a plan in continuous action, a mind closed to negativity, and supportive allies.', tryThis: 'Keep your Daily streak alive for seven days in a row.' },
+    { meaning: 'Two or more people working in harmony toward a shared purpose. Each brings knowledge and energy the others lack.', example: 'Hill points to famous friendships among industrialists such as Ford, Edison and Firestone.', tryThis: 'Name two people and propose a monthly 45-minute call.' },
+    { meaning: 'Hill’s most dated chapter. He claimed sexual energy, redirected, fuels creative achievement. A modern reading: channel strong emotions and restlessness into focused work.', example: 'Turning frustration after a rejection into an hour of portfolio work.', tryThis: 'Next time you feel restless or angry, do 20 minutes of focused work on your goal.' },
+    { meaning: 'Hill saw the subconscious as accepting whatever it is fed, so he urged readers to keep positive emotions dominant and starve negative ones.', example: 'Noticing “I’m bad at sales” and replacing it with “I’m learning sales daily”.', tryThis: 'For one day, write down every negative thing you tell yourself.' },
+    { meaning: 'Hill described the brain as a station that sends and receives thoughts. There is no scientific support for that. The useful part: ideas grow sharper in conversation with other minds.', example: 'A plan that improves after one honest coffee with someone smarter than you.', tryThis: 'Explain your plan to one sharp person this week and ask what is weak.' },
+    { meaning: 'Hill’s name for intuition: hunches that come once the other principles are habits. He describes holding imaginary council meetings with people he admired.', example: 'Asking yourself: “What would someone I admire do here?”', tryThis: 'Pick three people you admire. Before a big choice, ask what each would advise.' }
+  ],
+  fearChain: ['Indecision', 'Doubt', 'Fear'],
+  fearChainNote: 'Hill’s view: fear rarely arrives fully formed. It starts as indecision, hardens into doubt, and the two grow into fear. The cure starts with a decision.',
+  fearSigns: [
+    { name: 'Poverty',      signs: 'Indifference, indecision, worry, over-caution, putting things off' },
+    { name: 'Criticism',    signs: 'Self-consciousness, copying others, little initiative or ambition' },
+    { name: 'Ill health',   signs: 'Imagining illness, constant worry, using health as an excuse' },
+    { name: 'Loss of love', signs: 'Jealousy and fault-finding' },
+    { name: 'Old age',      signs: 'Slowing down too early, apologising for your age, losing initiative' },
+    { name: 'Death',        signs: 'Thinking about dying instead of living' }
+  ],
+  defeatNote: 'Hill insisted that a setback is temporary defeat, not failure. Failure is only what happens when you stop.',
+  mastermindRoles: [
+    { role: 'Mentor',    text: 'Has already done it' },
+    { role: 'Peer',      text: 'At the same stage as you' },
+    { role: 'Expert',    text: 'Has a skill you lack' },
+    { role: 'Supporter', text: 'Believes in you, tells you the truth' }
+  ],
+  mastermindHow: [
+    'Keep it small: two to five people.',
+    'Agree on one shared purpose: helping each member reach their aim.',
+    'Meet on a fixed rhythm, for example monthly.',
+    'Everyone gives and everyone gets. Harmony matters more than status.'
+  ],
+  keep: [
+    'Precise, written, dated goals',
+    'Daily reminders of what you want',
+    'A plan you start before you feel ready',
+    'Treating setbacks as temporary',
+    'A small group that helps you'
+  ],
+  question: [
+    'The Carnegie origin story',
+    'Claims about thought waves and “Infinite Intelligence”',
+    'The sexual transmutation framing',
+    'The idea that belief alone makes things happen',
+    'Measuring success mainly by money'
+  ],
+  science: [
+    { kind: 'agrees', tag: 'RESEARCH AGREES', title: 'Specific, ambitious goals work',
+      text: 'Decades of goal-setting research by Edwin Locke and Gary Latham show that specific, challenging goals lead to better performance than vague “do your best” goals.' },
+    { kind: 'warn', tag: 'RESEARCH ADDS A CAUTION', title: 'Daydreaming about success is not enough',
+      text: 'Studies by psychologist Gabriele Oettingen found that indulging in positive fantasies about the future can lower energy and effort. Picturing the goal and then the obstacle in the way (“mental contrasting”) works better.' },
+    { kind: 'agrees', tag: 'RESEARCH AGREES', title: 'If-then plans help you act',
+      text: 'Plans in the form “If situation X happens, then I will do Y” help people follow through. A review of 94 tests by Peter Gollwitzer and Paschal Sheeran found a medium-to-large positive effect on reaching goals.' }
+  ],
+  sources: 'Sources: Locke and Latham (2002), American Psychologist. Kappes and Oettingen (2011), “Positive fantasies about idealized futures sap energy”. Oettingen (2012), on positive fantasies and mental contrasting. Gollwitzer and Sheeran (2006), Advances in Experimental Social Psychology. On Hill’s history: Wikipedia, citing Carnegie biographer David Nasaw.',
+  quizzes: [
+    { q: 'According to Hill, where does achievement start?', o: ['Luck and connections', 'A definite goal backed by burning desire', 'Hard work alone', 'Positive thinking without a plan'], c: 1,
+      why: 'Hill’s starting point is always a specific goal you want intensely. Work and plans follow from it.' },
+    { q: 'Which of these is a definite aim in Hill’s sense?', o: ['Be more successful this year', 'Get rich someday', 'Save €10,000 by 30 June 2027 by putting €900 aside each month', 'Do my best at work'], c: 2,
+      why: 'It names an exact result, a date and what you will give for it. The others are wishes.' },
+    { q: 'What does research suggest adding when you picture your goal?', o: ['Picture it even longer', 'The main obstacle and an if-then plan', 'Keep the goal secret from everyone', 'Wait until you feel motivated'], c: 1,
+      why: 'Pure positive fantasy can lower energy. Contrasting the goal with the obstacle, plus an if-then plan, helps you act.' },
+    { q: 'Which principle is about working with a small group in harmony?', o: ['Autosuggestion', 'Specialized knowledge', 'Master Mind', 'Sixth sense'], c: 2,
+      why: 'The Master Mind is Hill’s name for two or more people coordinating toward a shared purpose.' },
+    { q: 'In Hill’s view, what does fear usually grow from?', o: ['Indecision that hardens into doubt', 'Too much ambition', 'Having a written plan', 'Talking to your allies'], c: 0,
+      why: 'Hill’s chain is indecision, then doubt, then fear. That is why he treats a firm decision as the first cure.' },
+    { q: 'Which part of the book is best treated with caution?', o: ['Writing a dated goal', 'Reading it aloud daily', 'The claim that belief alone makes things happen', 'Building a support group'], c: 2,
+      why: 'Belief helps you persist, but research shows results come from belief combined with realistic planning and action.' }
+  ]
+};
+const AVATAR_COLORS = ['#F2C14E', '#5CC8B0', '#FF8A65', '#A99BFF', '#6FB7FF'];
+/* ===================== END OF EDITABLE CONTENT ===================== */
+
+const LOCAL_KEY = 'tgr-goals-v2';
+const main = document.getElementById('main');
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const dayKey = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+const todayKey = () => dayKey(new Date());
+const fmt = (d, o) => d.toLocaleDateString('en-GB', o);
+const DEFAULTS = { aimStep: 0, goal: '', give: '', deadline: '', plan: '', name: '', signedOn: '', daily: {}, dailyDate: '', history: {}, ratings: {}, members: [], fears: {}, learnDone: {} };
+let S = { ...DEFAULTS, dailyDate: todayKey() };
+let tab = 'learn', userNav = false, lch = 0, quiz = {}, ref = null, loaded = false, mode = 'loading';
+
+/* ---------- saving ---------- */
+const setStatus = m => {
+  mode = m;
+  const t = { loading: ['Loading', 'busy'], saving: ['Saving', 'busy'], saved: ['Saved', 'ok'], local: ['Saved on this phone', 'ok'], slow: ['Still connecting', 'busy'], error: ['Not saved', 'bad'] }[m];
+  const el = document.getElementById('status');
+  el.className = 'status ' + t[1]; el.querySelector('span').textContent = t[0];
+};
+const pick = () => { const o = {}; for (const k in DEFAULTS) o[k] = S[k]; return o; };
+const apply = d => { S = { ...DEFAULTS, ...d }; ensureToday(); };
+function ensureToday() { if (S.dailyDate !== todayKey()) { S.daily = {}; S.dailyDate = todayKey(); } }
+let timer = null, writing = false, again = false;
+function save() {
+  if (!ref) { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(pick())); } catch (e) { setStatus('error'); return; } if (mode !== 'loading') setStatus('local'); return; }
+  if (!loaded) return;
+  setStatus('saving'); clearTimeout(timer); timer = setTimeout(flush, 700);
+}
+async function flush() {
+  if (writing) { again = true; return; }
+  writing = true;
+  try { await ref.set(pick()); setStatus('saved'); }
+  catch (e) {
+    if (e && e.code === 'unavailable') {
+      await new Promise(r => setTimeout(r, 800 + Math.random() * 800));
+      try { await ref.set(pick()); setStatus('saved'); } catch (e2) { setStatus('error'); }
+    } else setStatus('error');
+  }
+  writing = false;
+  if (again) { again = false; flush(); }
+}
+
+/* ---------- derived values ---------- */
+function deadlineInfo() {
+  if (!S.deadline) return { text: '[your date]', days: null };
+  const dl = new Date(S.deadline + 'T00:00:00'), t0 = new Date(); t0.setHours(0, 0, 0, 0);
+  return { text: fmt(dl, { day: 'numeric', month: 'long', year: 'numeric' }), days: Math.round((dl - t0) / 864e5) };
+}
+const lc = t => { t = String(t || '').trim(); return t.length > 1 && t[1] === t[1].toUpperCase() && /[A-Za-z]/.test(t[1]) ? t : t.charAt(0).toLowerCase() + t.slice(1); };
+function statement() {
+  if (!(S.goal || S.give || S.plan)) return 'Answer the first four steps and your statement writes itself here.';
+  return 'By ' + deadlineInfo().text + ', I will ' + (S.goal ? lc(S.goal).replace(/[.\s]+$/, '') : '[your goal]') + '.\nIn return, I will give ' + (S.give ? lc(S.give).replace(/[.\s]+$/, '') : '[what you give]') + '.\nMy plan: ' + (S.plan || '[your plan]') + '\nI start today.';
+}
+function daysHTML() {
+  const d = deadlineInfo().days;
+  if (d === null) return '';
+  return '<span class="disp big">' + Math.abs(d) + '</span> <span class="mut small">' + (d >= 0 ? 'days to go' : 'days past your date') + '</span>';
+}
+function streak() {
+  let n = 0; const c = new Date();
+  if (!S.history[dayKey(c)]) c.setDate(c.getDate() - 1);
+  while (S.history[dayKey(c)]) { n++; c.setDate(c.getDate() - 1); }
+  return n;
+}
+const initials = n => { const p = n.trim().split(/\s+/); return (p[0][0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase(); };
+const ICON_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 10 17 19 7"/></svg>';
+
+/* ---------- screens ---------- */
+function aimHTML() {
+  const i = S.aimStep, A = AIM_STEPS[i];
+  const segs = AIM_STEPS.map((x, j) => '<button class="seg' + (j <= i ? ' on' : '') + '" data-act="seg" data-i="' + j + '" aria-label="Go to step ' + (j + 1) + ', ' + x.tag.toLowerCase() + '"><span></span></button>').join('');
+  let body = '';
+  if (i === 0) body = '<div class="field"><label class="l" for="f-goal">My goal</label><textarea id="f-goal" class="fld short" rows="2" data-field="goal" placeholder="e.g. sign 5 paying clients by June">' + esc(S.goal) + '</textarea></div>';
+  if (i === 1) body = '<div class="field"><label class="l" for="f-give">What I give</label><textarea id="f-give" class="fld short" rows="2" data-field="give" placeholder="e.g. two focused hours every morning">' + esc(S.give) + '</textarea></div>';
+  if (i === 2) body = '<div class="field"><label class="l" for="f-dl">Deadline</label><input id="f-dl" class="fld" type="date" data-field="deadline" value="' + esc(S.deadline) + '"><div data-live="days">' + daysHTML() + '</div></div>';
+  if (i === 3) body = '<div class="field"><label class="l" for="f-plan">My plan</label><textarea id="f-plan" class="fld" data-field="plan" placeholder="The steps, starting with the one you take today">' + esc(S.plan) + '</textarea></div>';
+  if (i === 4) body = '<div class="paper"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">MY COMMITMENT</span><span class="seal' + (S.name.trim() ? ' on' : '') + '" data-live="seal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B2333" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 10 17 19 7"/></svg></span></div>'
+    + '<p class="stmt" data-live="stmt">' + esc(statement()) + '</p>'
+    + '<div class="field" style="gap:4px"><label for="f-sig" style="font-size:12px;font-weight:600;color:#5B5548">Sign here</label><input id="f-sig" class="sig" data-field="name" placeholder="Your name" autocomplete="name" value="' + esc(S.name) + '"><div data-live="signed" style="font-size:12px;color:#5B5548">' + (S.signedOn ? 'Signed on ' + esc(S.signedOn) : '') + '</div></div></div>';
+  if (i === 5) body = '<div class="two">' + ['am', 'pm'].map(k => '<div class="tile"><div style="font-weight:600">' + (k === 'am' ? 'Morning' : 'Evening') + '</div><div class="small" style="color:' + (S.daily[k] ? 'var(--gold)' : 'var(--mut)') + '">' + (S.daily[k] ? 'Done today' : 'Not yet today') + '</div></div>').join('') + '</div>';
+  return '<div class="segs">' + segs + '</div>'
+    + '<section class="card pop"><div class="stephead"><div class="disp num">0' + (i + 1) + '</div><div class="steptag">STEP ' + (i + 1) + ' OF 6<br>' + A.tag + '</div></div>'
+    + '<h2>' + esc(A.q) + '</h2>'
+    + '<div class="tip"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F2C14E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg><span>' + esc(A.tip) + '</span></div>'
+    + body + '</section>'
+    + '<div class="navrow">' + (i > 0 ? '<button class="btn ghost" data-act="back" aria-label="Previous step"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>' : '')
+    + '<button class="btn" data-act="next">' + NEXT_LABELS[i] + ' <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>';
+}
+const TAB_ICONS = {"aim": "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1.5\" fill=\"currentColor\"/></svg>", "daily": "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/></svg>", "steps": "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"4 20 4 15 9 15 9 10 14 10 14 5 20 5\"/></svg>", "mind": "<svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6\"/><circle cx=\"17\" cy=\"9\" r=\"2.5\"/><path d=\"M16.5 14.5c2.6.3 4.5 2.5 4.5 5.5\"/></svg>"};
+function quizHTML(ci) {
+  const Q = LEARN.quizzes[ci]; if (!Q) return '';
+  const pick = quiz[ci];
+  const answered = pick !== undefined;
+  return '<section class="card qz"><span class="tag" style="color:var(--gold)">CHECK YOURSELF</span><div style="font-weight:600;font-size:17px">' + esc(Q.q) + '</div><div class="list" style="gap:8px">'
+    + Q.o.map((o, i) => {
+      let cls = 'qo';
+      if (answered && i === Q.c) cls += ' right'; else if (answered && i === pick) cls += ' wrong';
+      return '<button class="' + cls + '" data-act="quiz" data-ch="' + ci + '" data-o="' + i + '" aria-pressed="' + (pick === i) + '">' + (answered && i === Q.c ? '<b style="color:#5CC8B0">✓ </b>' : answered && i === pick ? '<b style="color:var(--coral)">✕ </b>' : '') + esc(o) + '</button>';
+    }).join('') + '</div>'
+    + (answered ? '<div class="qwhy pop"><b style="color:' + (pick === Q.c ? '#5CC8B0' : 'var(--coral)') + '">' + (pick === Q.c ? 'Right.' : 'Not quite.') + '</b> ' + esc(Q.why) + (pick === Q.c ? '' : ' Tap another answer to try again.') + '</div>' : '') + '</section>';
+}
+const H = t => '<div class="disp" style="font-size:20px;line-height:1.2">' + esc(t) + '</div>';
+const P = t => '<p class="lbody">' + esc(t) + '</p>';
+function chapterHTML(ci) {
+  const L = LEARN;
+  if (ci === 0) return '<section class="lhero pop"><span class="tag">THE IDEA IN ONE SENTENCE</span><p>' + esc(L.oneLine) + '</p></section>'
+    + '<section class="card">' + H('Hill’s formula, as a picture') + '<div class="formula">'
+    + L.formula.map((f, i) => '<div class="fx"><div class="fxn disp">' + (i + 1) + '</div><div><div style="font-weight:600">' + esc(f.t) + '</div><div class="small mut">' + esc(f.s) + '</div></div></div>' + (i < L.formula.length - 1 ? '<div class="plus" aria-hidden="true">+</div>' : '')).join('')
+    + '<div class="plus" aria-hidden="true">=</div><div class="fres disp">' + esc(L.formulaResult) + '</div></div></section>'
+    + '<section class="card">' + H('Why it matters') + L.bigIdea.map(P).join('') + '</section>'
+    + '<section class="card">' + H('Where the book comes from') + L.origin.map(P).join('') + '</section>';
+  if (ci === 1) return '<section class="card">' + H('A wish is not an aim') + P('Hill’s most practical idea: the brain cannot act on a vague wish. It needs an exact target. Compare:')
+    + '<div class="list" style="gap:12px">' + L.wishes.map(w => '<div class="wa"><div class="wish"><span class="tag" style="color:var(--coral)">WISH</span><s>' + esc(w.wish) + '</s></div><div class="arrow" aria-hidden="true">↓</div><div class="aimc"><span class="tag" style="color:var(--bg)">DEFINITE AIM</span><span>' + esc(w.aim) + '</span></div></div>').join('') + '</div>'
+    + '<div class="tests">' + L.aimTests.map((t, i) => '<div class="tst"><span class="disp" style="color:var(--gold);font-size:22px">' + (i + 1) + '</span><span class="small">' + esc(t) + '</span></div>').join('') + '</div><p class="foot" style="text-align:left">Three quick tests to check your aim.</p></section>'
+    + '<section class="card">' + H('Hill’s six steps, worked through') + P('Follow Maya, an invented example, as she applies each step. You will do the same in the Aim tab.')
+    + '<div class="loop">' + L.sixSteps.map((s, i) => '<div class="lstep"><div class="lnum disp">' + (i + 1) + '</div><div style="padding-top:6px;flex:1"><div style="font-weight:600">' + esc(s.step) + '</div><div class="maya"><span class="tag" style="color:var(--gold)">MAYA</span> ' + esc(s.maya) + '</div></div></div>').join('') + '</div></section>'
+    + L.stories.map(s => '<section class="card story">' + H(s.title) + P(s.text) + '</section>').join('');
+  if (ci === 2) return '<section class="card">' + H('Hill’s theory in two ideas') + L.mindIdea.map(P).join('') + '</section>'
+    + '<section class="card">' + H('Your day, the Hill way') + '<div class="dayline">' + L.dayPlan.map((d, i) => '<div class="dl"><div class="dlic">' + (i === 0 ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2"/></svg>' : i === 1 ? '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>' : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>') + '</div><div><div class="tag" style="color:var(--gold)">' + esc(d.when.toUpperCase()) + '</div><div class="small" style="color:var(--soft)">' + esc(d.what) + '</div></div></div>').join('') + '</div></section>'
+    + '<section class="card">' + H('How to read your statement') + '<div class="list" style="gap:8px">' + L.readTips.map(t => '<div class="tipr"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5CC8B0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12 10 17 19 7"/></svg><span class="small" style="color:var(--soft)">' + esc(t) + '</span></div>').join('') + '</div></section>'
+    + '<section class="card">' + H('Upgrade from research: WOOP') + P('Psychologist Gabriele Oettingen’s method adds the step Hill missed: facing the obstacle. Here is Maya’s version.')
+    + '<div class="woop">' + L.woop.map(w => '<div class="wp"><div class="wk disp">' + w.k + '</div><div><div class="tag" style="color:var(--gold)">' + esc(w.name.toUpperCase()) + '</div><div class="small" style="color:var(--soft)">' + esc(w.maya) + '</div></div></div>').join('') + '</div></section>';
+  if (ci === 3) return '<section class="card">' + H('The map of the 13 principles') + P('The book has 13 chapters, one per principle. They are not strict steps in order. This app groups them into four families so they are easier to remember (the grouping is ours, not Hill’s).')
+    + '<div class="clusters">' + L.clusters.map(c => '<div class="cl" style="border-color:' + c.color + '"><div class="tag" style="color:' + c.color + '">' + esc(c.name.toUpperCase()) + '</div><div class="small mut">' + esc(c.note) + '</div><div class="chipw">' + c.ids.map(i => '<span class="pchip" style="background:' + c.color + '">' + (i + 1) + ' ' + esc(PRINCIPLES[i].name) + '</span>').join('') + '</div></div>').join('') + '</div></section>'
+    + '<div class="disp" style="font-size:20px;padding:4px 2px 0">Tap a principle to open it</div>'
+    + PRINCIPLES.map((p, i) => { const d = L.principleDetails[i]; const c = L.clusters.find(x => x.ids.includes(i));
+      return '<details class="pd"><summary><span class="pn disp" style="color:' + c.color + '">' + (i + 1) + '</span><span style="flex:1;font-weight:600">' + esc(p.name) + '</span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A3B1C8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>'
+        + '<div class="pdb"><div><div class="tag" style="color:var(--mut)">WHAT IT MEANS</div><p class="lbody">' + esc(d.meaning) + '</p></div><div><div class="tag" style="color:var(--mut)">EXAMPLE</div><p class="lbody">' + esc(d.example) + '</p></div><div class="tryit"><div class="tag" style="color:var(--bg)">TRY THIS</div><div>' + esc(d.tryThis) + '</div></div></div></details>'; }).join('');
+  if (ci === 4) return '<section class="card">' + H('How fear grows') + '<div class="chain">' + L.fearChain.map((f, i) => '<div class="ch" style="background:' + ['#C9785F', '#E5805F', '#FF8A65'][i] + '">' + esc(f) + '</div>' + (i < L.fearChain.length - 1 ? '<div class="arrow" aria-hidden="true">→</div>' : '')).join('') + '</div>' + P(L.fearChainNote) + '</section>'
+    + '<section class="card">' + H('The six basic fears and their signs') + '<div class="list" style="gap:8px">' + L.fearSigns.map(f => '<div class="fs"><div style="font-weight:600;color:#FFB49C">' + esc(f.name) + '</div><div class="small mut">' + esc(f.signs) + '</div></div>').join('') + '</div><p class="foot" style="text-align:left">Signs Hill describes, paraphrased. Tick yours in the Mind tab.</p></section>'
+    + '<section class="card">' + H('Temporary defeat, not failure') + '<svg viewBox="0 0 320 130" width="100%" role="img" aria-label="A line that dips at three setbacks but keeps rising to the goal"><defs><marker id="ahd" viewBox="0 0 10 10" refX="3" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="#F2C14E"/></marker></defs><polyline points="14,108 60,82 85,96 130,62 155,80 200,46 225,64 270,30 296,22" fill="none" stroke="#F2C14E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ahd)"/><g fill="#FF8A65" stroke="#121E33" stroke-width="3"><circle cx="85" cy="96" r="7"/><circle cx="155" cy="80" r="7"/><circle cx="225" cy="64" r="7"/></g><g fill="#A3B1C8" font-size="11" font-family="Inter,sans-serif" text-anchor="middle"><text x="85" y="118">setback</text><text x="155" y="102">setback</text><text x="225" y="86">setback</text><text x="14" y="126" text-anchor="start">start</text><text x="300" y="12" text-anchor="end" fill="#F2C14E" font-weight="600">goal</text></g></svg>' + P(L.defeatNote) + '</section>'
+    + '<section class="card">' + H('Build your Master Mind') + '<div class="mm"><div class="mmc disp">You</div>' + L.mastermindRoles.map((r, i) => '<div class="mmr mm' + i + '"><div style="font-weight:700;font-size:13px">' + esc(r.role) + '</div><div style="font-size:11.5px;line-height:1.3">' + esc(r.text) + '</div></div>').join('') + '</div><p class="foot" style="text-align:left">Four useful roles to look for. The roles are our suggestion, not Hill’s.</p>'
+    + '<div class="list" style="gap:8px">' + L.mastermindHow.map((t, i) => '<div class="tipr"><span class="disp" style="color:var(--gold);width:18px">' + (i + 1) + '</span><span class="small" style="color:var(--soft)">' + esc(t) + '</span></div>').join('') + '</div></section>';
+  return '<section class="card">' + H('Keep or question') + '<div class="kq"><div><div class="tag" style="color:#5CC8B0">WORTH KEEPING</div>' + L.keep.map(k => '<div class="kqi">' + esc(k) + '</div>').join('') + '</div><div><div class="tag" style="color:var(--coral)">TREAT WITH CARE</div>' + L.question.map(k => '<div class="kqi q">' + esc(k) + '</div>').join('') + '</div></div></section>'
+    + '<section class="card">' + H('What modern research says') + L.science.map(x => '<div class="sci' + (x.kind === 'warn' ? ' warn' : '') + '"><span class="tag" style="color:' + (x.kind === 'warn' ? 'var(--coral)' : '#5CC8B0') + '">' + esc(x.tag) + '</span><div style="font-weight:600">' + esc(x.title) + '</div><div class="small" style="color:var(--soft)">' + esc(x.text) + '</div></div>').join('')
+    + '<p class="foot" style="text-align:left">' + esc(L.sources) + '</p></section>';
+}
+function learnHTML() {
+  const C = LEARN.chapters, n = C.length, done = Object.keys(S.learnDone || {}).length;
+  return '<div class="chips scroll" role="tablist" aria-label="Chapters">' + C.map((c, i) => '<button class="chip' + (i === lch ? ' on' : '') + ((S.learnDone || {})[i] ? ' done' : '') + '" data-act="lch" data-i="' + i + '" role="tab" aria-selected="' + (i === lch) + '">' + ((S.learnDone || {})[i] ? '✓ ' : (i + 1) + ' · ') + esc(c.short) + '</button>').join('') + '</div>'
+    + '<div><div class="small mut" style="display:flex;justify-content:space-between"><span>Chapter ' + (lch + 1) + ' of ' + n + '</span><span>' + done + ' of ' + n + ' read</span></div><div class="bar" style="margin-top:8px"><i style="width:' + Math.round(done / n * 100) + '%"></i></div></div>'
+    + '<h2 class="pop" style="font-size:26px">' + esc(C[lch].title) + '</h2>'
+    + chapterHTML(lch) + quizHTML(lch)
+    + '<div class="navrow">' + (lch > 0 ? '<button class="btn ghost" data-act="lprev" aria-label="Previous chapter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>' : '')
+    + '<button class="btn" data-act="lnext">' + (lch < n - 1 ? 'Next: ' + esc(C[lch + 1].short) : 'Start with your aim') + ' <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>';
+}
+function dailyHTML() {
+  const done = RITUALS.filter(r => S.daily[r.id]).length, C = 351.86, st = streak();
+  const L = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  let week = '';
+  for (let k = 6; k >= 0; k--) { const d = new Date(); d.setDate(d.getDate() - k); week += '<div class="' + (k === 0 ? 'today ' : '') + (S.history[dayKey(d)] ? 'full' : '') + '"><span>' + L[d.getDay()] + '</span><div class="dot"></div></div>'; }
+  const dl = deadlineInfo().days;
+  return '<section class="card hero"><div class="ring"><svg width="132" height="132" viewBox="0 0 132 132" role="img" aria-label="' + done + ' of ' + RITUALS.length + ' rituals done today"><circle cx="66" cy="66" r="56" fill="none" stroke="#22355A" stroke-width="12"/><circle cx="66" cy="66" r="56" fill="none" stroke="' + (done ? '#F2C14E' : 'transparent') + '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + Math.max(0.1, done / RITUALS.length * C - (done < RITUALS.length ? 12 : 0)).toFixed(1) + ' ' + C + '" transform="rotate(-90 66 66)"/></svg>'
+    + '<div class="ringc"><div class="disp" style="font-size:34px;line-height:1">' + done + '<span style="color:var(--faint);font-size:20px">/' + RITUALS.length + '</span></div><div class="small mut">today</div></div></div>'
+    + '<div style="flex:1;display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:8px"><svg width="26" height="26" viewBox="0 0 24 24" fill="#FF8A65" aria-hidden="true"><path d="M12 2c1.2 4 5.5 6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.8 1.6-4.4 2.7-5.5.2 2 1.1 3.3 2.7 3.8C11 8.6 10.9 5.6 12 2z"/></svg><div><div class="disp" style="font-size:26px;line-height:1">' + st + '</div><div class="small mut">day streak</div></div></div>'
+    + '<div class="week">' + week + '</div>' + (dl !== null ? '<div class="small mut">' + (dl >= 0 ? dl + ' days to your deadline' : 'Deadline passed') + '</div>' : '') + '</div></section>'
+    + (done === RITUALS.length ? '<section class="banner pop"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B1424" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="7 12.5 10.5 16 17 9"/></svg><div><div class="disp" style="font-size:17px">Full ritual done</div><div class="small">One more day of proof that you mean it.</div></div></section>' : '')
+    + '<section class="paper"><span class="lab">READ THIS ALOUD</span><p class="stmt" style="font-size:17px">' + esc(statement()) + '</p>' + (S.goal ? '' : '<button class="btn" data-act="tab" data-tab="aim" style="background:#1B2333;color:#F5F1E8">Set my aim</button>') + '</section>'
+    + '<div class="list">' + RITUALS.map(r => '<button class="rit' + (S.daily[r.id] ? ' on' : '') + '" data-act="rit" data-id="' + r.id + '" aria-pressed="' + !!S.daily[r.id] + '"><span class="chk">' + ICON_CHECK + '</span><span><span class="when">' + r.when + '</span><br><span style="font-size:15px">' + esc(r.label) + '</span></span></button>').join('') + '</div>'
+    + '<p class="foot">Ticks reset at midnight. A full day keeps your streak alive.</p>';
+}
+function stepsHTML() {
+  const rated = PRINCIPLES.filter(p => S.ratings[p.id]);
+  let weak = null, pct = 0;
+  if (rated.length) {
+    weak = rated.reduce((a, b) => S.ratings[b.id] < S.ratings[a.id] ? b : a);
+    pct = Math.round(rated.reduce((t, p) => t + S.ratings[p.id], 0) / (PRINCIPLES.length * 5) * 100);
+  }
+  return '<section class="card"><div style="display:flex;justify-content:space-between;align-items:flex-end"><div><div class="small mut" style="font-weight:600;letter-spacing:.12em">MASTERY</div><div class="disp" style="font-size:44px;line-height:1">' + pct + '%</div></div><div class="small mut">' + rated.length + ' of 13 rated</div></div>'
+    + '<div class="bar"><i style="width:' + pct + '%"></i></div>'
+    + '<div class="focus"><div style="font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--coral)">FOCUS THIS WEEK</div><div class="disp" style="font-size:20px">' + (weak ? esc(weak.name) : 'Rate yourself below') + '</div><div class="small" style="color:var(--soft)">' + (weak ? esc(weak.note) : 'Your weakest principle becomes this week’s focus.') + '</div></div></section>'
+    + PRINCIPLES.map((p, i) => {
+      const r = S.ratings[p.id] || 0;
+      return '<section class="prin' + (weak && weak.id === p.id ? ' weak' : '') + '"><div style="display:flex;gap:12px;align-items:flex-start"><div class="pn disp">' + (i + 1) + '</div><div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:600">' + esc(p.name) + '</span><span class="small mut" style="font-weight:600;white-space:nowrap">' + (r ? r + ' / 5' : 'Not rated') + '</span></div><div class="small mut">' + esc(p.note) + '</div></div></div>'
+        + '<div class="meter">' + [1, 2, 3, 4, 5].map(v => '<button class="' + (v <= r ? 'on' : '') + '" data-act="rate" data-id="' + p.id + '" data-v="' + v + '" aria-label="Rate ' + esc(p.name) + ' ' + v + ' of 5" aria-pressed="' + (v === r) + '"><span></span></button>').join('') + '</div></section>';
+    }).join('')
+    + '<p class="foot">Tap a bar to rate: 1 weak, 5 strong.</p>';
+}
+function mindHTML() {
+  const m = S.members, fc = FEARS.filter(f => S.fears[f.id]).length;
+  const col = n => { let h = 2166136261; for (const ch of n.trim().toLowerCase()) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0; return AVATAR_COLORS[((h ^ (h >>> 16)) >>> 0) % AVATAR_COLORS.length]; };
+  return '<section class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="disp" style="font-size:20px">Master Mind</div><div class="small mut">' + (m.length ? m.length + (m.length === 1 ? ' ally' : ' allies') : 'No allies yet') + '</div></div><div class="stack" style="display:flex">'
+    + m.slice(0, 4).map(n => '<span class="av" style="background:' + col(n) + '">' + esc(initials(n)) + '</span>').join('') + (m.length > 4 ? '<span class="av more">+' + (m.length - 4) + '</span>' : '') + '</div></div>'
+    + (m.length ? '' : '<div class="small mut">Look for a mentor, a peer, an expert and a supporter. See Learn, chapter 5.</div>')
+    + m.map((n, i) => '<div class="mem"><span class="av" style="background:' + col(n) + '">' + esc(initials(n)) + '</span><span style="flex:1">' + esc(n) + '</span><button class="x" data-act="rm" data-i="' + i + '" aria-label="Remove ' + esc(n) + '"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>').join('')
+    + '<form class="add" id="addForm"><label class="sr" for="f-new">Add an ally</label><input id="f-new" class="fld" placeholder="Add an ally" autocomplete="off"><button class="btn" aria-label="Add ally"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></form></section>'
+    + '<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline"><div class="disp" style="font-size:20px">The six fears</div><div class="small" style="color:' + (fc ? 'var(--coral)' : 'var(--mut)') + ';font-weight:600">' + fc + ' to work on</div></div><div class="small mut">Tap the ones holding you back right now.</div>'
+    + '<div class="two" style="gap:8px">' + FEARS.map(f => '<button class="fear' + (S.fears[f.id] ? ' on' : '') + '" data-act="fear" data-id="' + f.id + '" aria-pressed="' + !!S.fears[f.id] + '">' + esc(f.label) + '</button>').join('') + '</div></section>'
+    + '<div class="disp" style="font-size:20px;padding:6px 2px 0">Four habits of persistence</div>'
+    + '<div class="two">' + PERSISTENCE.map((h, i) => '<div class="pc"><div class="disp" style="font-size:28px;line-height:1;color:var(--gold)">' + (i + 1) + '</div><div style="font-weight:600">' + esc(h.title) + '</div><div class="small mut">' + esc(h.text) + '</div></div>').join('') + '</div>'
+    + '<p class="foot">Frameworks paraphrased from Napoleon Hill, Think and Grow Rich (1937).</p>';
+}
+
+/* ---------- render ---------- */
+function render(scrollTop) {
+  ensureToday();
+  const h = new Date().getHours();
+  document.getElementById('kick').textContent = tab === 'daily' ? (h < 12 ? 'GOOD MORNING' : h < 18 ? 'GOOD AFTERNOON' : 'GOOD EVENING') : SCREENS[tab].kicker;
+  document.getElementById('title').textContent = SCREENS[tab].title;
+  main.innerHTML = tab === 'learn' ? learnHTML() : tab === 'aim' ? aimHTML() : tab === 'daily' ? dailyHTML() : tab === 'steps' ? stepsHTML() : mindHTML();
+  document.querySelectorAll('nav button').forEach(b => b.dataset.tab === tab ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
+  const chip = main.querySelector('.chip.on'); if (chip) { const cp = chip.parentElement; cp.scrollLeft = chip.offsetLeft - cp.offsetLeft - (cp.clientWidth - chip.offsetWidth) / 2; }
+  if (scrollTop) window.scrollTo(0, 0);
+}
+function liveUpdate() {
+  const s = main.querySelector('[data-live=stmt]'); if (s) s.textContent = statement();
+  const d = main.querySelector('[data-live=days]'); if (d) d.innerHTML = daysHTML();
+  const seal = main.querySelector('[data-live=seal]'); if (seal) seal.classList.toggle('on', !!S.name.trim());
+  const sg = main.querySelector('[data-live=signed]'); if (sg) sg.textContent = S.signedOn ? 'Signed on ' + S.signedOn : '';
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act;
+  if (a === 'tab') { tab = b.dataset.tab; userNav = true; render(true); return; }
+  if (a === 'lch') { lch = +b.dataset.i; render(true); return; }
+  if (a === 'lprev') { lch = Math.max(0, lch - 1); render(true); return; }
+  if (a === 'lnext') { S.learnDone = { ...S.learnDone, [lch]: true }; if (lch < LEARN.chapters.length - 1) lch++; else { tab = 'aim'; userNav = true; } save(); render(true); return; }
+  if (a === 'quiz') { quiz[b.dataset.ch] = +b.dataset.o; render(); return; }
+  if (a === 'seg') { S.aimStep = +b.dataset.i; }
+  if (a === 'back') { S.aimStep = Math.max(0, S.aimStep - 1); }
+  if (a === 'next') { if (S.aimStep < 5) S.aimStep++; else { tab = 'daily'; save(); render(true); return; } }
+  if (a === 'rit') {
+    S.daily = { ...S.daily, [b.dataset.id]: !S.daily[b.dataset.id] }; S.dailyDate = todayKey();
+    const h = { ...S.history };
+    if (RITUALS.every(r => S.daily[r.id])) h[todayKey()] = true; else delete h[todayKey()];
+    S.history = h;
+  }
+  if (a === 'rate') S.ratings = { ...S.ratings, [b.dataset.id]: +b.dataset.v };
+  if (a === 'fear') S.fears = { ...S.fears, [b.dataset.id]: !S.fears[b.dataset.id] };
+  if (a === 'rm') S.members = S.members.filter((_, j) => j !== +b.dataset.i);
+  save(); render(['seg', 'back', 'next'].includes(a));
+});
+document.addEventListener('input', e => {
+  const f = e.target.dataset && e.target.dataset.field; if (!f) return;
+  S[f] = e.target.value;
+  if (e.target.tagName === 'TEXTAREA' && !CSS.supports('field-sizing', 'content')) { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }
+  if (f === 'name') S.signedOn = S.name.trim() ? (S.signedOn || fmt(new Date(), { day: 'numeric', month: 'long', year: 'numeric' })) : '';
+  liveUpdate(); save();
+});
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'addForm') return;
+  e.preventDefault();
+  const inp = document.getElementById('f-new'), n = inp.value.trim();
+  if (!n) return;
+  S.members = [...S.members, n.slice(0, 60)]; save(); render();
+  document.getElementById('f-new').focus();
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && tab === 'daily') render(); });
+
+/* ---------- start ---------- */
+render();
+(async () => {
+  const readLocal = () => { try { const r = localStorage.getItem(LOCAL_KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } };
+  const useLocal = () => { const l = readLocal(); if (l) apply(l); ref = null; loaded = true; setStatus('local'); if (!userNav && S.goal) tab = 'daily'; render(); };
+  if (!window.claude || !window.claude.use) { useLocal(); return; }
+  const slow = setTimeout(() => { if (!loaded) setStatus('slow'); }, 10000);
+  try {
+    const [user, db] = await Promise.all([claude.use('user'), claude.use('db')]);
+    const id = user ? await user.id() : null;
+    if (!db || !id) { clearTimeout(slow); useLocal(); return; }
+    ref = db.doc('data/users/' + id + '/tgr');
+    const snap = await ref.get();
+    clearTimeout(slow);
+    if (snap.exists) apply(snap.data());
+    else { const l = readLocal(); if (l) apply(l); }
+    loaded = true; setStatus('saved'); if (!userNav && S.goal) tab = 'daily'; render();
+    if (!snap.exists && readLocal()) save();
+  } catch (e) { clearTimeout(slow); useLocal(); setStatus('error'); }
+})();
+}
+</script>
+</body>
+</html>
